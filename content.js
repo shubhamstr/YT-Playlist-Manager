@@ -36,14 +36,47 @@ setInterval(injectCheckboxes, 1500)
 
 // Add the floating control panel (UI)
 function createControlPanel() {
-  if (document.getElementById("yt-bulk-panel")) return
+  // If panel exists, just show it again
+  if (document.getElementById("yt-bulk-panel")) {
+    document.getElementById("yt-bulk-panel").style.display = "block"
+    return
+  }
 
+  // If reopen button doesn't exist, create it
+  if (!document.getElementById("yt-bulk-reopen")) {
+    const reopenBtn = document.createElement("button")
+    reopenBtn.id = "yt-bulk-reopen"
+    reopenBtn.innerText = "YT"
+    reopenBtn.style.position = "fixed"
+    reopenBtn.style.bottom = "20px"
+    reopenBtn.style.right = "20px"
+    reopenBtn.style.zIndex = "99999999"
+    reopenBtn.style.background = "#1e88e5"
+    reopenBtn.style.color = "#fff"
+    reopenBtn.style.border = "none"
+    reopenBtn.style.borderRadius = "50%"
+    reopenBtn.style.width = "45px"
+    reopenBtn.style.height = "45px"
+    reopenBtn.style.cursor = "pointer"
+    reopenBtn.style.fontWeight = "bold"
+    reopenBtn.style.fontSize = "16px"
+    reopenBtn.style.boxShadow = "0 2px 8px rgba(0,0,0,0.25)"
+
+    reopenBtn.onclick = () => {
+      const panel = document.getElementById("yt-bulk-panel")
+      if (panel) panel.style.display = "block"
+    }
+
+    document.body.appendChild(reopenBtn)
+  }
+
+  // Main panel
   const panel = document.createElement("div")
   panel.id = "yt-bulk-panel"
   panel.style.position = "fixed"
   panel.style.top = "80px"
   panel.style.right = "20px"
-  panel.style.zIndex = "999999"
+  panel.style.zIndex = "9999999"
   panel.style.background = "#ffffff"
   panel.style.padding = "12px"
   panel.style.borderRadius = "10px"
@@ -53,8 +86,18 @@ function createControlPanel() {
   panel.style.maxWidth = "260px"
 
   panel.innerHTML = `
-    <div style="font-weight:bold; margin-bottom:8px;">
-      YT Bulk Playlist
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <div style="font-weight:bold;">YT Bulk Playlist</div>
+      <button id="yb-close"
+        style="
+          background:none;
+          border:none;
+          font-size:16px;
+          cursor:pointer;
+          padding:0;
+          margin:0;
+          line-height:14px;
+        ">✖</button>
     </div>
 
     <button id="yb-select-page" style="margin:2px 0; width:100%;">Select All (page)</button>
@@ -89,17 +132,24 @@ function createControlPanel() {
 
   document.body.appendChild(panel)
 
-  // Attach events
+  // Close button — hides, not removes
+  document.getElementById("yb-close").onclick = () => {
+    panel.style.display = "none"
+  }
+
+  // Event bindings
   document.getElementById("yb-select-page").onclick = selectAllOnPage
   document.getElementById("yb-select-all").onclick = autoSelectEntirePlaylist
   document.getElementById("yb-select-title").onclick = selectByTitle
   document.getElementById("yb-select-channel").onclick = selectByChannel
+
   document.getElementById("yb-select-duration").onclick = () => {
     const val = document.getElementById("yb-duration-input").value
     const min = parseInt(val, 10)
     if (!isNaN(min)) selectByDuration(min)
-    else alert("Enter a valid number of minutes")
+    else alert("Enter a valid number")
   }
+
   document.getElementById("yb-select-unavailable").onclick = selectUnavailable
   document.getElementById("yb-remove").onclick = bulkRemove
   document.getElementById("yb-move").onclick = bulkMove
@@ -330,6 +380,7 @@ async function bulkRemove() {
 
 // Bulk Add/Move to another playlist
 async function bulkMove() {
+  console.log("bulkMove")
   const items = getSelectedItems()
   if (!items.length) {
     alert("No videos selected.")
@@ -362,13 +413,17 @@ async function bulkMove() {
     // Inside dialog: find a playlist option
     const options = Array.from(
       document.querySelectorAll(
-        "ytd-playlist-add-to-option-renderer, ytd-add-to-playlist-renderer"
+        "yt-list-item-view-model"
       )
     )
+    console.log("targetLower", targetLower)
+    console.log("options", options)
 
     const targetOption = options.find((el) =>
       el.innerText.toLowerCase().includes(targetLower)
     )
+
+    console.log("targetOption", targetOption)
 
     if (targetOption) {
       targetOption.click()
