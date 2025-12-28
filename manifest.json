@@ -2,9 +2,8 @@
   "manifest_version": 3,
   "name": "YouTube Playlist Manager",
   "version": "1.0.0",
-  "description": "Bulk select, filter, remove or move videos in YouTube playlists.",
+  "description": "Manage YouTube playlists by selecting, filtering, moving, or removing videos in bulk.",
   "permissions": [
-    "scripting",
     "activeTab"
   ],
   "content_scripts": [
@@ -17,5 +16,8 @@
       ],
       "run_at": "document_idle"
     }
-  ]
+  ],
+  "icons": {
+    "128": "icons/icon128.png"
+  }
 }
