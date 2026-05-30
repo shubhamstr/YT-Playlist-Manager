@@ -16,8 +16,19 @@ function injectCheckboxes() {
     const checkbox = document.createElement("input")
     checkbox.type = "checkbox"
     checkbox.className = "yt-bulk-checkbox"
-    checkbox.style.marginRight = "8px"
+    checkbox.style.width = "20px"
+    checkbox.style.height = "20px"
+    checkbox.style.marginRight = "12px"
     checkbox.style.cursor = "pointer"
+    checkbox.style.flexShrink = "0"
+
+    // Stop event propagation to prevent YouTube from playing the video when selecting
+    checkbox.addEventListener("click", (e) => {
+      e.stopPropagation()
+    })
+    checkbox.addEventListener("mousedown", (e) => {
+      e.stopPropagation()
+    })
 
     // Where to insert – near the thumbnail or title
     const targetContainer =
